@@ -1,0 +1,80 @@
+﻿@page "/SingleStudent/{PassedId:int}"
+
+@inject NavigationManager navigationManager
+
+<h3>Student Details</h3>
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+    }
+</style>
+
+First Name:
+<table style="width:30%">
+    <tr>
+        <td>@Stud.FirstName</td>
+    </tr>
+</table>
+<br />
+<br />
+Last Name:
+<table style="width:30%">
+    <tr>
+        <td>@Stud.LastName</td>
+    </tr>
+</table>
+<br />
+<br />
+Birthdate:
+<table style="width:30%">
+    <tr>
+        <td>@Stud.BirthDate</td>
+    </tr>
+</table>
+<br />
+<br />
+Studies:
+<table style="width:30%">
+    <tr>
+        <td>@Stud.Studies</td>
+    </tr>
+</table>
+<br />
+<br />
+Avatar:
+<table style="width:30%">
+    <tr>
+        <td>@Stud.Avatar</td>
+    </tr>
+</table>
+<img src=@Stud.Avatar width="250" height="250" />
+<br />
+
+
+<button @onclick="(() => ReturnToTable())">Return</button>
+
+
+
+@code {
+    [Parameter]
+    public int PassedId { get; set; }
+
+
+    public static List<Student> students = Helper.getStudents();
+
+    Helper help = new Helper();
+
+    Student Stud;
+
+    protected override void OnInitialized()
+    {
+        Stud = Helper.getStudent(PassedId);
+    }
+
+    private void ReturnToTable()
+    {
+        string NavTo = "/Students/";
+        navigationManager.NavigateTo(NavTo);
+    }
+}

@@ -1,0 +1,127 @@
+﻿@page "/students"
+
+@inject IJSRuntime js
+@inject NavigationManager navigationManager 
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+    }
+</style>
+
+<h3>Students</h3>
+<table style="width:100%">
+    <tr>
+        <td>Avatar</td>
+        <td><button @onclick="(() => SortByFirstName())">FirstName</button></td>
+        <td><button @onclick="(() => SortByLastName())">LastName</button></td>
+        <td><button @onclick="(() => SortByBirthDate())">BirthDate</button></td>
+        <td><button @onclick="(() => SortByStudies())">Studies</button></td>
+        <td>Delete Student</td>
+    </tr>
+    @foreach (var s in students)
+    {
+        <tr>
+            <td>
+                <button @onclick="(() => CheckStudentDetails(s))"><img src=@s.Avatar width="100" height="100" /></button>
+            </td>
+            <td>
+                @s.FirstName
+            </td>
+            <td>
+                @s.LastName
+            </td>
+            <td>
+                @s.BirthDate
+            </td>
+            <td>
+                @s.Studies
+            </td>
+            <td>
+                <button @onclick="(() => DeleteStudent(s))"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Red_X.svg/768px-Red_X.svg.png" width="40" height="40"></button>
+            </td>
+        </tr>
+    }
+</table>
+
+
+@code {
+
+    private int FirstNameCounter = 1;
+    private int LastNameCounter = 1;
+    private int BirthDateCounter = 1;
+    private int StudiesCounter = 1;
+
+    public List<Student> students;
+
+    protected override void OnInitialized()
+    {
+        students = new List<Student>();
+        students.Add(new Student
+        {
+            Id = 1,
+            Avatar = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTabOgeMNrSqYJ4c2-kMg0I_QreIqbVVfgvWQ&usqp=CAU",
+            FirstName = "Jan",
+            LastName = "Kowalski",
+            BirthDate = "5/24/2021",
+            Studies = "Informatyka"
+        });
+        students.Add(new Student
+        {
+            Id = 2,
+            Avatar = "https://cdn.picpng.com/female/user-female-avatar-woman-81396.png",
+            FirstName = "Anna",
+            LastName = "Malewska",
+            BirthDate = "5/25/2021",
+            Studies = "Informatyka"
+        });
+        Helper.setStudents(students);
+    }
+
+
+    private async void DeleteStudent(Student s)
+    {
+        var confirmed = await js.InvokeAsync<bool>("confirm", "Are you sure you wish to delete a student?");
+        students.Remove(s);
+        StateHasChanged();                                      //Forces the website to update, actually removing the student from the view
+    }
+
+    private void CheckStudentDetails(Student s)
+    {
+        string NavTo = "/SingleStudent/" + s.Id;
+        navigationManager.NavigateTo(NavTo);
+    }
+
+    private void SortByFirstName()
+    {
+        if(FirstNameCounter % 2 == 1)
+            students = students.OrderBy(x => x.FirstName).ToList();
+        else
+            students = students.OrderByDescending(x => x.FirstName).ToList();
+        FirstNameCounter++;
+    }
+    private void SortByLastName()
+    {
+        if (LastNameCounter % 2 == 1)
+            students = students.OrderBy(x => x.LastName).ToList();
+        else
+            students = students.OrderByDescending(x => x.LastName).ToList();
+        LastNameCounter++;
+    }
+    private void SortByBirthDate()
+    {
+        if (BirthDateCounter % 2 == 1)
+            students = students.OrderBy(x => x.BirthDate).ToList();
+        else
+            students = students.OrderByDescending(x => x.BirthDate).ToList();
+        BirthDateCounter++;
+    }
+    private void SortByStudies()
+    {
+        if (StudiesCounter % 2 == 1)
+            students = students.OrderBy(x => x.Studies).ToList();
+        else
+            students = students.OrderByDescending(x => x.Studies).ToList();
+        StudiesCounter++;
+    }
+}
